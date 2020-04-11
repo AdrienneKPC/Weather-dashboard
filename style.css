@@ -22,31 +22,12 @@ main{
 
 .left{
     width:30%;
-    border: 1px solid red;
+    border: 1px solid rgb(17, 16, 16);
 }
 .right{
     width:70%;
-    border: 1px solid green;
+    border: 1px solid rgb(5, 5, 5);
 }
-/* RIGHT SIDE
- <jumbotron>
- <h1> cityName (Date) </h1> 
-  <i src=></i>
-  <p>temp</p>
-  <p> humid</p>
-  <p> wind speed </p>
-  <p> ux index we didn't find color-coded </p>
- </jumbotron>
- <div class="forecast-container">
-  <h1> 5day forecasrer </h1>
-  <div class="card">
-    <h3> data </h3>
-    <img>
-      <p></p>
-      <p> </p>
-  </div>
- </div>
-*/
 
 .card{
     width:9rem;

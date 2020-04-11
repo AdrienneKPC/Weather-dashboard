@@ -1,54 +1,46 @@
 const BASE_URL = "http://api.openweathermap.org/data/2.5/forecast?q=";
 const API_KEY = "&appid=2109f92e69cf64b7217771b95cfff1bc";
 
+//This function starts the app - pulls in previous searches from local storage and displays as clickable
 $(document).ready(function () {
+  makeHistoryRows();
+//click event - takes input, empties the input, then initiates function with AJAX call
   $("#button").on("click", function () {
     var searchedCity = $("#searched-city").val();
-
-    //clear input box when needed
+    var searchedCityLowerCase = searchedCity.toLowerCase()
     $("#searched-city").val("");
-
-    //pass searched city into search weather
-    searchWeather(searchedCity);
+    console.log(searchedCityLowerCase)
+    //pass in name of city
+    searchWeather(searchedCityLowerCase);
   });
-  //PULL OUT LOCAL STORAGE VALUES AS ROWS
-  //// history in local storage
 });
+//using AJAX to make a GET request to weather API that returns JSON data
+
 function searchWeather(cityString) {
-  console.log(BASE_URL + cityString + API_KEY);
+  
   var myRequest = $.ajax({
     url: BASE_URL + cityString + API_KEY,
     method: "GET",
     datatype: "json",
   });
+  //pull out the list  - the data we need
   myRequest.done(function (response) {
     let fiveDayForecast = response.list;
     console.log(response);
     //Store in localStorage
     localStorage.setItem(cityString, JSON.stringify(response.list));
-
-    // fiveDayForecast.forEach((e) => {
-    //   let timeStamp = e.dt;
-    //   let date = new Date(timeStamp * 1000);
-    //   console.log(date);
-    // });
+    //renders everything
     renderToday(cityString, response.list);
+    makeHistoryRows();
   });
 }
 // Of selected city
 /*
-- name
+- cityString: what
 - everything else in the object
 */
 function renderToday(cityString, list) {
-  /* cant find uv index
-    index 0-4 (Today) we'll use index 1
-    index 5-9 (Tommorrow) we'll use index 6
-    index 10-14 (2 days later) index 11
-    index 15-19 (3 days layer) index 15
-    index 20 - 24 (4 days later) index 21
-    index 25-29 (5 days later) index 26
-    */
+//extract key value pairs from response into our object, added date
   let today = new Date();
   console.log(today);
   let cityTodayObj = {
@@ -62,9 +54,9 @@ function renderToday(cityString, list) {
     fiveDayForecast: [],
   };
   var counter = 1;
-
+//going by multiples of 8 so needed to get one forcast for each day
   for (i = 8; i < list.length; i += 8) {
-      console.log(list[i])
+    console.log(list[i])
     cityTodayObj.fiveDayForecast.push({
       //name
       imageURL:
@@ -74,18 +66,18 @@ function renderToday(cityString, list) {
       temp: kelvinToFaranheit(list[i].main.temp),
       humidity: list[i].main.humidity,
       wind: list[i].wind.speed,
-      date: new Date(list[i].dt *1000)
+      date: new Date(list[i].dt * 1000)
     });
     counter++;
   }
-  console.log(cityTodayObj);
-
+  
+//building html forecast and appending it to html
   var todayContainer = $(".today-container");
   var htmlStringToday = `
     <div class="row">
        <h1 class="display-4"> ${
-         cityTodayObj.name
-       } (${getFormattedDate(cityTodayObj.date)})</h1>
+    cityTodayObj.name
+    } (${getFormattedDate(cityTodayObj.date)})</h1>
        <img src= "${cityTodayObj.imageURL}" />
     </div>
     <div class="row">
@@ -125,21 +117,39 @@ function renderToday(cityString, list) {
 function kelvinToFaranheit(kelvinDeg) {
   return Math.floor(kelvinDeg * (9 / 5) - 459.67);
 }
-
-function getFormattedDate(dateObj){
-    return `${dateObj.getMonth()}/ ${dateObj.getDate()}/ ${dateObj.getFullYear()}`
+//using javascript date object to get correct format
+function getFormattedDate(dateObj) {
+  return `${dateObj.getMonth()}/ ${dateObj.getDate()}/ ${dateObj.getFullYear()}`
 }
 
-function makeHistoryRows(){
-    var container = document.getElementsByClassName("history-rows")[0];
-    let htmlString = ``;
-    for( var i = 0; i< localStorage.length; i++){
-        var curKey = localStorage.key(i);
-        if(localStorage.getItem(curKey)){
-            htmlString+=   `<div class="row ">
-            <h3> ${curKey}</h3>
+function makeHistoryRows() {
+
+  var container = document.getElementsByClassName("history-rows")[0];
+  let htmlString = ``;
+  for (var i = 0; i < localStorage.length; i++) {
+    var curKey = localStorage.key(i);
+    if (localStorage.getItem(curKey)) {
+      htmlString += `<div class="row history-row">
+            <h3 id="${curKey}"> ${curKey}</h3>
             </div>`
-        }
     }
-    container.innerHTML+= htmlString;
+  }
+  container.innerHTML = "";
+  container.innerHTML += htmlString;
+
+  registerClickHistory()
+}
+//registers what happens when the history are clicked and adds click even to all in history
+function registerClickHistory() {
+  var historyArray = document.getElementsByClassName("history-row")
+  console.log(historyArray);
+
+  for (let index = 0; index < historyArray.length; index++) {
+    const element = historyArray[index];
+    $(element).on("click", function (event) {
+      let name = event.target.id;
+      let data = JSON.parse(localStorage.getItem(name));
+      renderToday(name, data)
+    });
+  }
 }
