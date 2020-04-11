@@ -1,0 +1,67 @@
+body,html{
+    height:100%;
+    width:100%;
+}
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+}
+
+header{
+    width:100%;
+    background-color: grey;
+    text-align: center;
+}
+
+main{
+    width:100%;
+    height:100%;
+    display:flex;
+}
+
+.left{
+    width:30%;
+    border: 1px solid red;
+}
+.right{
+    width:70%;
+    border: 1px solid green;
+}
+/* RIGHT SIDE
+ <jumbotron>
+ <h1> cityName (Date) </h1> 
+  <i src=></i>
+  <p>temp</p>
+  <p> humid</p>
+  <p> wind speed </p>
+  <p> ux index we didn't find color-coded </p>
+ </jumbotron>
+ <div class="forecast-container">
+  <h1> 5day forecasrer </h1>
+  <div class="card">
+    <h3> data </h3>
+    <img>
+      <p></p>
+      <p> </p>
+  </div>
+ </div>
+*/
+
+.card{
+    width:9rem;
+    height:auto;
+    background:#4ebeff;
+    color:white;
+    padding:1rem;
+    margin:0 1rem;
+}
+
+.forecast-container{
+    display:flex;
+  flex-wrap: wrap;   
+}
+
+.forecast-container h1{
+    flex-basis: 100%;
+}
